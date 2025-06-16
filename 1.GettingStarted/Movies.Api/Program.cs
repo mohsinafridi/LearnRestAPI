@@ -36,6 +36,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 var dbInitix = app.Services.GetRequiredService<DbInitializer>();
-await dbInitix.InitializeAsync();
+await dbInitix.InitalizeSqlServerAsync();
 
 app.Run();
