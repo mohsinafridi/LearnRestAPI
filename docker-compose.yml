@@ -1,0 +1,23 @@
+services:
+  movies.api:
+    image: ${DOCKER_REGISTRY-}moviesapi
+    build:
+      context: .
+      dockerfile: 1.GettingStarted/Movies.Api/Dockerfile
+  db:
+    container_name: postgres-container
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_DB: moviesDB
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5433"
+    
+
+volumes:
+  pgdata:
+ 
