@@ -15,16 +15,13 @@ internal class MovieRepository : IMovieRepository
     }
     public async Task<bool> CreateAsync(Movie movie, CancellationToken token = default)
     {
-        using var connection = await _dbConnectionFactory.CreateConnectionAsync();
-      
+        using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);      
         using var transaction = connection.BeginTransaction();
-
-        string sql = @"
-            INSERT INTO Movies (Id, title, slug, yearOfRelease)
+        
+        var result = await connection.ExecuteAsync(new CommandDefinition("""
+             INSERT INTO Movies (Id, title, slug, yearOfRelease)
             VALUES (@Id, @Title, @Slug, @YearOfRelease);
-            ";
-
-        var result = await connection.QueryFirstOrDefaultAsync<int>(sql, movie, transaction: transaction);
+            """, movie, transaction, cancellationToken:token));
 
         if (result > 0)
         {
@@ -69,7 +66,7 @@ internal class MovieRepository : IMovieRepository
 
         return movie;
     }
-    public async Task<Movie?> GetByIdSlug(string slug, CancellationToken token = default)
+    public async Task<Movie?> GetBySlugAsync(string slug, CancellationToken token = default)
     {
         using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
         var movie = await connection.QuerySingleOrDefaultAsync<Movie>(
