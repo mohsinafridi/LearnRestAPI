@@ -148,11 +148,11 @@ group by id ,title,slug,yearOfRelease
 
         await connection.ExecuteAsync(new CommandDefinition("""
             DELETE from genres where movieid = @id
-            """, new { id }, cancellationToken: token));
+            """, new { id }, transaction, cancellationToken: token));
 
         var result = await connection.ExecuteAsync(new CommandDefinition("""
             DELETE from movies where id = @id
-            """, new { id }, cancellationToken: token));
+            """, new { id }, transaction, cancellationToken: token));
 
         transaction.Commit();
         return result > 0;
