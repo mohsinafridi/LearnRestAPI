@@ -20,9 +20,8 @@ public static class ApplicationServiceCollectionExtensions
 
     public static IServiceCollection AddDatabase(this IServiceCollection services,string connectionString)
     {
-       // services.AddSingleton<IDbConnectionFactory>(_ => new NpgsqlConnectionFactor(connectionString));
-
-        services.AddSingleton<IDbConnectionFactory>(_ => new SqlServerConnectionFactory(connectionString));
+        services.AddSingleton<IDbConnectionFactory>(_ => new NpgsqlConnectionFactory(connectionString));
+       // services.AddSingleton<IDbConnectionFactory>(_ => new SqlServerConnectionFactory(connectionString));
         services.AddSingleton<DbInitializer>();
         return services;
     }

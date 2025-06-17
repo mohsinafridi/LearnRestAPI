@@ -75,6 +75,7 @@ app.UseMiddleware<ValidationMappingMiddleware>();
 app.MapControllers();
 
 var dbInitixer = app.Services.GetRequiredService<DbInitializer>();
-await dbInitixer.InitalizeSqlServerAsync();
+await dbInitixer.InitializeAsync();
+// await dbInitixer.InitalizeSqlServerAsync();
 
 app.Run();

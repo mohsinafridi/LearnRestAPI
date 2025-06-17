@@ -20,7 +20,7 @@ public class MoviesController : ControllerBase
 
     [HttpPost]
     [Route(ApiEndpoints.Movies.Create)]
-    [Authorize(AuthConstants.TrustedMemberPolicyName)]
+    //  [Authorize(AuthConstants.TrustedMemberPolicyName)]
     public async Task<IActionResult> Create([FromBody] CreateMovieRequest request , CancellationToken token)
     {
         var movie = request.MapToMovie();
