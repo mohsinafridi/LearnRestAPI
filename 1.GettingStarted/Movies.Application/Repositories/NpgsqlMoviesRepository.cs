@@ -38,12 +38,21 @@ public class NpgsqlMoviesRepository : IMovieRepository
         return result > 0;
     }
 
-  
 
-    public async Task<IEnumerable<Movie>> GetAllAsync(Guid? userId = default, CancellationToken token = default)
+
+    public async Task<IEnumerable<Movie>> GetAllAsync(GetAllMoviesOptions options,
+                                                        CancellationToken token = default)
     {
         using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
-        var result = await connection.QueryAsync(new CommandDefinition("""
+
+        var orderClause = string.Empty;
+        if (options.SortField is not null)
+        {
+            orderClause = $"""
+                order by m.{options.SortField} {(options.SortOrder == SortOrder.Ascending ? "asc" : "desc")}
+                """;
+        }
+        var result = await connection.QueryAsync(new CommandDefinition($"""
             select m.*, 
                    string_agg(distinct g.name, ',') as genres , 
                    round(avg(r.rating), 1) as rating, 
@@ -53,8 +62,20 @@ public class NpgsqlMoviesRepository : IMovieRepository
             left join ratings r on m.id = r.movieid
             left join ratings myr on m.id = myr.movieid
                 and myr.userid = @userId
-            group by id, userrating
-            """, new { userId }, cancellationToken: token));
+            where (@title is null or m.title like ('%' || @title || '%'))
+            and  (@yearofrelease is null or m.yearofrelease = @yearofrelease)
+            group by id, userrating   {orderClause}
+             limit @pageSize
+              offset @pageOffset
+            """, new
+        {
+            userId = options.UserId,
+            title = options.Title,
+            yearofrelease = options.YearOfRelease,
+            pageSize = options.PageSize,
+            pageOffset = (options.Page - 1) * options.PageSize
+        },
+        cancellationToken: token));
 
         return result.Select(x => new Movie
         {
@@ -63,7 +84,8 @@ public class NpgsqlMoviesRepository : IMovieRepository
             YearOfRelease = x.yearofrelease,
             Rating = (float?)x.rating,
             UserRating = (int?)x.userrating,
-            Genres = Enumerable.ToList(x.genres.Split(','))
+            Genres = null,
+            //   Genres = Enumerable.ToList(x.genres.Split(','))
         });
     }
 
@@ -77,7 +99,7 @@ public class NpgsqlMoviesRepository : IMovieRepository
             left join ratings myr on m.id = myr.movieid and myr.userid = @userId
             where id = @id
             group by id,userrating
-            """, new { id , userId }, cancellationToken: token));
+            """, new { id, userId }, cancellationToken: token));
 
         if (movie is null)
         {
@@ -107,7 +129,7 @@ public class NpgsqlMoviesRepository : IMovieRepository
             left join ratings myr on m.id = myr.movieid and myr.userid = @userId
             where slug = @slug
             group by id,userrating
-            """, new { slug , userId }, cancellationToken: token));
+            """, new { slug, userId }, cancellationToken: token));
 
         if (movie is null)
         {
@@ -178,5 +200,19 @@ public class NpgsqlMoviesRepository : IMovieRepository
             """, new { id }, cancellationToken: token));
     }
 
+    public async Task<int> GetCountAsync(string? title, int? yearofRelease, CancellationToken token = default)
+    {
+        using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
+        return await connection.QuerySingleAsync<int>(new CommandDefinition("""
+            select count(id) from movies
+            where (title is null or title like ('%' || title ||'%'))
+            and (@yearOfRelease is null or yearOfRelease = @yearOfRelease)
+            """, new
+        {
+            title,
+            yearofRelease
+        }, cancellationToken: token));
 
+        
+    }
 }

@@ -31,15 +31,21 @@ public static class ContractMapping
         };
     }
 
-    public static MoviesResponse MapToResponse(this IEnumerable<Movie> movies)
+    public static MoviesResponse MapToResponse(this IEnumerable<Movie> movies,
+        int page,
+        int pageSize,
+        int totalCount)
     {
         return new MoviesResponse
         {
-            Items = movies.Select(m => m.MapToResponse()),
+            Items = movies.Select(MapToResponse),
+            Page = page,
+            PageSize = pageSize,
+            TotalCount = totalCount
         };
     }
 
-    public static Movie MapToMovie(this UpdateMovieRequest request , Guid id)
+    public static Movie MapToMovie(this UpdateMovieRequest request, Guid id)
     {
         return new Movie
         {
@@ -58,5 +64,25 @@ public static class ContractMapping
             Slug = m.Slug,
             Rating = m.Rating
         });
+    }
+
+    public static GetAllMoviesOptions MapToOption(this GetAllMovieRequest request)
+    {
+        return new GetAllMoviesOptions
+        {
+            Title = request.Title,
+            YearOfRelease = request.YearOfRelease,
+            SortField = request.SortBy?.Trim('+','-'),
+            SortOrder = request.SortBy is null ? SortOrder.Unsorted :
+                          request.SortBy.StartsWith("-") ? SortOrder.Descending : SortOrder.Ascending,
+         Page  =request.Page,
+         PageSize = request.PageSize
+        };
+    }
+
+    public static GetAllMoviesOptions WithUser(this GetAllMoviesOptions options, Guid? userId)
+    {
+        options.UserId = userId;
+        return options;
     }
 }

@@ -1,7 +1,5 @@
-﻿using Movies.Contracts.Responses;
-using System.ComponentModel.DataAnnotations;
-using System.Reflection.Metadata;
-using System.Runtime.CompilerServices;
+﻿using FluentValidation;
+using Movies.Contracts.Responses;
 
 namespace Movies.Api.Mapping
 {
@@ -22,18 +20,17 @@ namespace Movies.Api.Mapping
             }
             catch (ValidationException ex)
             {
-                throw;
-                //context.Response.StatusCode = 400;
-                //var validatorFailureResponse = new ValidationFailureResponse
-                //{
-                //    Errors = ex.Errors.Select(x => new ValidatioResponse
-                //    {
-                //        PropertyName = x.PropertyName,
-                //        Message = x.ErrorMessage
-                //    })
-                //};
-                
-                //await context.Response.WriteAsJsonAsync(validatorFailureResponse, cancellationToken: context.RequestAborted);
+                context.Response.StatusCode = 400;
+                var validationFailureResponse = new ValidationFailureResponse
+                {
+                    Errors = ex.Errors.Select(x => new ValidatioResponse
+                    {
+                        PropertyName = x.PropertyName,
+                        Message = x.ErrorMessage
+                    })
+                };
+
+                await context.Response.WriteAsJsonAsync(validationFailureResponse);
 
             }
         }

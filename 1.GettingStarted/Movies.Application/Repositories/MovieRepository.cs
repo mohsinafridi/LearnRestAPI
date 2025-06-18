@@ -100,7 +100,7 @@ internal class MovieRepository : IMovieRepository
         return movie;
 
     }
-    public async Task<IEnumerable<Movie>> GetAllAsync(Guid? userId = default, CancellationToken token = default)
+    public async Task<IEnumerable<Movie>> GetAllAsync(GetAllMoviesOptions options, CancellationToken token = default)
     {
         using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
         string sql = @"
@@ -110,10 +110,11 @@ internal class MovieRepository : IMovieRepository
             left join ratings myr on m.id = myr.movieid and myr.userid = @userId
             left join genres g on m.id = g.movieid
             group by id ,title,slug,yearOfRelease
+           
             ";
 
 
-        var result = await connection.QueryAsync(new CommandDefinition(sql,new { userId },cancellationToken: token));
+        var result = await connection.QueryAsync(new CommandDefinition(sql,new { options.UserId },cancellationToken: token));
 
         return result.Select(x => new Movie
         {
@@ -184,5 +185,8 @@ internal class MovieRepository : IMovieRepository
 
     }
 
-
+    public Task<int> GetCountAsync(string? title, int? yearofRelease, CancellationToken token = default)
+    {
+        throw new NotImplementedException();
+    }
 }
