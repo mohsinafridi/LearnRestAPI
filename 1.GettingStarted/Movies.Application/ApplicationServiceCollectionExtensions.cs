@@ -11,8 +11,13 @@ public static class ApplicationServiceCollectionExtensions
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         // Register repositories
-        services.AddSingleton<IMovieRepository, MovieRepository>();
+        // services.AddSingleton<IMovieRepository, MovieRepository>();
+        services.AddSingleton<IMovieRepository, NpgsqlMoviesRepository>();
         services.AddSingleton<IMovieService, MovieService>();
+
+        services.AddSingleton<IRatingRepository, RatingRepository>();
+        services.AddSingleton<IRatingService, RatingService>();
+
         services.AddValidatorsFromAssemblyContaining<IApplicationMarket>(ServiceLifetime.Singleton);
 
         return services;

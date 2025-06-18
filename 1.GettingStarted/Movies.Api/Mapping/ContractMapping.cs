@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http.Features;
-using Movies.Application.Models;
+﻿using Movies.Application.Models;
 using Movies.Contracts.Requests;
 using Movies.Contracts.Responses;
 
@@ -25,6 +24,8 @@ public static class ContractMapping
             Id = movie.Id,
             Title = movie.Title,
             Slug = movie.Slug,
+            Rating = movie.Rating,
+            UserRating = movie.UserRating,
             YearOfRelease = movie.YearOfRelease,
             Genres = movie.Genres
         };
@@ -47,5 +48,15 @@ public static class ContractMapping
             YearOfRelease = request.YearOfRelease,
             Genres = request.Genres.ToList()
         };
+    }
+
+    public static IEnumerable<MovieRatingResponse> MapToResponse(this IEnumerable<MovieRating> ratings)
+    {
+        return ratings.Select(m => new MovieRatingResponse
+        {
+            MovieId = m.MovieId,
+            Slug = m.Slug,
+            Rating = m.Rating
+        });
     }
 }
