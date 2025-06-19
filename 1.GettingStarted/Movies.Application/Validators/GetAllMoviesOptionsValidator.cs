@@ -1,8 +1,7 @@
-﻿using Azure.Core;
-using FluentValidation;
+﻿using FluentValidation;
 using Movies.Application.Models;
 
-namespace Movies.Contracts.Requests;
+namespace Movies.Application.Validators;
 
 public class GetAllMoviesOptionsValidator :AbstractValidator<GetAllMoviesOptions>
 {

@@ -11,7 +11,7 @@ public static class ApiEndpoints
         
         
         public const string Create = $"{Base}";
-        public const string Get = $"{Base}/{{id:guid}}"; // "api/movies/{id}"
+        public const string Get = $"{Base}/{{idOrSlug}}"; // "api/movies/{id}"
         public const string GetAll = $"{Base}"; // "api/movies"
         public const string Update = $"{Base}/{{id:guid}}"; // "api/movies/{id}"
         public const string Delete = $"{Base}/{{id:guid}}"; // "api/movies/{id}"

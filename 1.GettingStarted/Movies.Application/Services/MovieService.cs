@@ -1,9 +1,6 @@
-﻿using Dapper;
-using FluentValidation;
-using Movies.Application.Database;
+﻿using FluentValidation;
 using Movies.Application.Models;
 using Movies.Application.Repositories;
-using Movies.Contracts.Requests;
 
 
 namespace Movies.Application.Services;
