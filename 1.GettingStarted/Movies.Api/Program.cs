@@ -81,11 +81,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(x =>
     {
-        foreach (var description in app.DescribeApiVersions())
-        {
-            x.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json",
-                description.GroupName);
-        }
+        //foreach (var description in app.DescribeApiVersions())
+        //{
+        //    x.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json",
+        //        description.GroupName);
+        //}
     });
 }
 
