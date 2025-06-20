@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using Microsoft.IdentityModel.Tokens;
 using Movies.Application.Models;
 using Movies.Application.Repositories;
 
@@ -11,6 +10,7 @@ public class MovieValidator : AbstractValidator<Movie>
 
     public MovieValidator(IMovieRepository movieRepository)
     {
+        _movieRepository = movieRepository;
 
         RuleFor(m => m.Id)
                        .NotEmpty().WithMessage("Id is required.");
@@ -30,16 +30,20 @@ public class MovieValidator : AbstractValidator<Movie>
             .ForEach(genre => genre.NotEmpty().WithMessage("Genre cannot be empty."))
             .ForEach(genre => genre.MaximumLength(50).WithMessage("Genre must not exceed 50 characters."));
 
-        
+        RuleFor(x => x.Slug)
+            .MustAsync(ValidateSlug)
+            .WithMessage("This movies already exists in the system!");
     }
 
-    //private async Task<bool> ValidateSlug(Movie movie,string slug, CancellationToken token)
-    //{ 
-    //var existingMovie  = await _movieRepository.GetBySlugAsync(slug, token);
-    //    if (existingMovie is not null)
-    //    {
-    //        return existingMovie.Id == movie.Id;
-    //    }
-    //    return existingMovie is null;
-    //}
+    private async Task<bool> ValidateSlug(Movie movie ,string slug, CancellationToken token)
+    {
+        var existingMovie= await _movieRepository.GetBySlugAsync(slug);
+        if (existingMovie is not null)
+        { 
+            return existingMovie.Id == movie.Id;
+
+        }
+        return existingMovie is null;
+    }
+
 }

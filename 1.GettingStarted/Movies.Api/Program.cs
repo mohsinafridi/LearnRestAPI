@@ -42,7 +42,8 @@ builder.Services.AddAuthentication(x =>
 builder.Services.AddAuthorization(x =>
 {
     x.AddPolicy(AuthConstants.AdminUserPolicyName,
-        p => p.RequireClaim(AuthConstants.AdminUserClaimName, "true"));
+      //   p => p.RequireClaim(AuthConstants.AdminUserClaimName, "true"));
+      p => p.AddRequirements(new AdminAuthRequirement(config["ApiKey"]!)));
 
     x.AddPolicy(AuthConstants.TrustedMemberPolicyName,
         p => p.RequireAssertion(c =>
@@ -50,13 +51,27 @@ builder.Services.AddAuthorization(x =>
             c.User.HasClaim(m => m is { Type: AuthConstants.TrustedMemberClaimName, Value: "true" })));
 });
 
+builder.Services.AddScoped<ApiKeyAuthFilter>();
 // Versioning
-builder.Services.AddApiVersioning(x=>{
-    x.DefaultApiVersion =new Asp.Versioning.ApiVersion(1.0);
+builder.Services.AddApiVersioning(x =>
+{
+    x.DefaultApiVersion = new Asp.Versioning.ApiVersion(1.0);
     x.AssumeDefaultVersionWhenUnspecified = true;
     x.ReportApiVersions = true;
     x.ApiVersionReader = new MediaTypeApiVersionReader("api-version");
 }).AddMvc();
+
+
+// builder.Services.AddResponseCaching();
+builder.Services.AddOutputCache(option =>
+{
+    option.AddBasePolicy(c => c.Cache());
+    option.AddPolicy("MoviesCache", c => c.Cache()
+            .Expire(TimeSpan.FromMinutes(1))
+            .SetVaryByQuery(new[] { "title", "year", "sortBy", "page", "pageSize" })
+            .Tag("movies"));
+        });
+
 
 builder.Services.AddControllers();
 builder.Services.AddHealthChecks()
@@ -64,8 +79,8 @@ builder.Services.AddHealthChecks()
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
-builder.Services.AddSwaggerGen(x => x.OperationFilter<SwaggerDefaultValues>());
+// builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+// builder.Services.AddSwaggerGen(x => x.OperationFilter<SwaggerDefaultValues>());
 
 //register application services
 
@@ -78,15 +93,15 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(x =>
-    {
-        //foreach (var description in app.DescribeApiVersions())
-        //{
-        //    x.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json",
-        //        description.GroupName);
-        //}
-    });
+    // app.UseSwagger();
+    // app.UseSwaggerUI(x =>
+    // {
+    //foreach (var description in app.DescribeApiVersions())
+    //{
+    //    x.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json",
+    //        description.GroupName);
+    //}
+    // });
 }
 
 
@@ -97,6 +112,11 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+
+// app.CORS();
+// app.UseResponseCaching();
+app.UseOutputCache();
 
 app.UseMiddleware<ValidationMappingMiddleware>();
 
