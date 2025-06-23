@@ -35,7 +35,7 @@ public class RatingService : IRatingService
                new ValidationFailure
                {
                    PropertyName = "Rating",
-                   ErrorMessage = "Rating must be between 1 and 5.mm.."
+                   ErrorMessage = "Rating must be between 1 and 5."
                }
            };
 
