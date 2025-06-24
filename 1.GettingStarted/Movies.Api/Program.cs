@@ -90,6 +90,7 @@ builder.Services.AddApplication();
 builder.Services.AddDatabase(config["Database:ConnectionString"]!);
 
 var app = builder.Build();
+app.CreateApiVersioningSet();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

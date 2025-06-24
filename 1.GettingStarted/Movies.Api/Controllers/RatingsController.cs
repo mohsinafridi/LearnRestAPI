@@ -46,7 +46,7 @@ public class RatingsController : ControllerBase
     public async Task<IActionResult> GetRating([FromRoute] Guid id, CancellationToken token)
     {
         var userId = HttpContext.GetUserId();
-        var ratings = await _ratingService.GetRatingForUserAsync(userId!.Value, token);
+        var ratings = await _ratingService.GetRatingsForUserAsync(userId!.Value, token);
         var ratingsResponse = ratings.MapToResponse();
         return Ok(ratingsResponse);
     }
