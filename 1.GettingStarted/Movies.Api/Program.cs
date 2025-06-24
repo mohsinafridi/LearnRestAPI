@@ -11,6 +11,7 @@ using Movies.Application.Database;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text;
 using Asp.Versioning.Builder;
+using Movies.Api.Endpoints;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -73,7 +74,7 @@ builder.Services.AddOutputCache(option =>
         });
 
 
-builder.Services.AddControllers();
+// builder.Services.AddControllers();
 builder.Services.AddHealthChecks()
     .AddCheck<DatabaseHealthCheck>(DatabaseHealthCheck.Name);
 
@@ -120,7 +121,8 @@ app.UseOutputCache();
 
 app.UseMiddleware<ValidationMappingMiddleware>();
 
-app.MapControllers();
+// app.MapControllers();
+app.MapApiEndpoints(); // minimal apis
 
 var dbInitixer = app.Services.GetRequiredService<DbInitializer>();
 await dbInitixer.InitializeAsync();

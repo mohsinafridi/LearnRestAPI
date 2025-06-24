@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Helpers", "Helpers", "{E206
 	ProjectSection(SolutionItems) = preProject
 		Helpers\Course.postman_collection.json = Helpers\Course.postman_collection.json
 		Helpers\movies.json = Helpers\movies.json
-	EndProjectSection
+	EndProjectSection)
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Movies.Api", "1.GettingStarted\Movies.Api\Movies.Api.csproj", "{5F67A488-3747-493A-9F82-DF6082D686F2}"
 EndProject

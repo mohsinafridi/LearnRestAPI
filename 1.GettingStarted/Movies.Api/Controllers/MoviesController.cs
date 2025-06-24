@@ -36,7 +36,10 @@ public class MoviesController : ControllerBase
         var movie = request.MapToMovie();
         var result = await _movieService.CreateAsync(movie, token);
         await _outputCacheStore.EvictByTagAsync("movies", token);
-        return CreatedAtAction(nameof(Get),new { idOrSlug = movie.Id }, movie);
+
+        var response = movie.MapToResponse();
+
+        return CreatedAtAction(nameof(Get),new { idOrSlug = movie.Id }, response);
     }
 
      
@@ -52,7 +55,7 @@ public class MoviesController : ControllerBase
         var movie = Guid.TryParse(idOrSlug, out var id)
            ? await _movieService.GetByIdAsync(id, userId, token)
            : await _movieService.GetBySlugAsync(idOrSlug, userId, token);
-        if (movie == null)
+        if (movie is null)
         {
             return NotFound();
         }
@@ -74,7 +77,10 @@ public class MoviesController : ControllerBase
         var movies = await _movieService.GetAllAsync(options, token);
 
         var moviesCount = await _movieService.GetCountAsync(options.Title,options.YearOfRelease, token);
-        var moviesResponse = movies.MapToResponse(request.Page,request.PageSize,moviesCount);
+
+        var moviesResponse = movies.MapToResponse(request.Page.GetValueOrDefault(PagedRequest.DefaultPage),
+            request.PageSize.GetValueOrDefault(PagedRequest.DefaultPageSize),
+            moviesCount);
 
         return Ok(moviesResponse);
     }

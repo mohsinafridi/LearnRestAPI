@@ -30,7 +30,8 @@ public class RatingService : IRatingService
     {
         if (rating is <= 0 or > 5)
         {
-            var validationFailures = new List<ValidationFailure>
+
+            List<ValidationFailure> validationFailures = new ()
            {
                new ValidationFailure
                {
@@ -56,7 +57,7 @@ public class RatingService : IRatingService
         return _ratingRepository.DeleteRatingAsync(movieId, userId, token);
     }
 
-    public Task<IEnumerable<MovieRating>> GetRatingForUserAsync(Guid userId, CancellationToken token = default)
+    public Task<IEnumerable<MovieRating>> GetRatingsForUserAsync(Guid userId, CancellationToken token = default)
     {
         return _ratingRepository.GetRatingForUserAsync(userId, token);
     }

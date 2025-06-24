@@ -11,5 +11,5 @@ public interface IRatingService
     Task<(float? Rating, int? UserRating)> GetRatingAsync(Guid movieId, Guid userId, CancellationToken token = default);
 
     Task<bool> DeleteRatingAsync(Guid movieId, Guid userId, CancellationToken token = default);
-    Task<IEnumerable<MovieRating>> GetRatingForUserAsync(Guid userId, CancellationToken token = default);
+    Task<IEnumerable<MovieRating>> GetRatingsForUserAsync(Guid userId, CancellationToken token = default);
 }
