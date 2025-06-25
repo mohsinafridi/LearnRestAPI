@@ -1,12 +1,9 @@
-﻿using Azure;
-using Azure.Core;
-using Microsoft.AspNetCore.Builder;
+﻿
 using Movies.Api.Auth;
 using Movies.Api.Mapping;
 using Movies.Application.Services;
 using Movies.Contracts.Requests;
 using Movies.Contracts.Responses;
-using static Azure.Core.HttpHeader;
 
 namespace Movies.Api.Endpoints.Movies;
 
@@ -36,7 +33,7 @@ public static class GetAllMoviesEndpoint
         .WithDescription("Get All Movies")
         .Produces<MoviesResponse>(StatusCodes.Status200OK)
         .WithApiVersionSet(ApiVersioning.VersionSet)
-        .HasApiVersion(1.0);
+        .HasApiVersion(1.0).CacheOutput("MoviesCache");
 
 
         app.MapGet(ApiEndpoints.Movies.GetAll, async ([AsParameters] GetAllMovieRequest request, IMovieService movieService, HttpContext context, CancellationToken token) =>
@@ -59,7 +56,8 @@ public static class GetAllMoviesEndpoint
         .WithDescription("Get All Movies")
         .Produces<MoviesResponse>(StatusCodes.Status200OK)
         .WithApiVersionSet(ApiVersioning.VersionSet)
-        .HasApiVersion(2.0);
+        .HasApiVersion(2.0)
+        .CacheOutput("MoviesCache");
 
         return app;
     }

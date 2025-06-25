@@ -2,6 +2,7 @@
 using Movies.Api.Mapping;
 using Movies.Application.Services;
 using Movies.Contracts.Responses;
+
 namespace Movies.Api.Endpoints.Movies;
 
 public static class GetMovieEndpoint
@@ -27,10 +28,11 @@ public static class GetMovieEndpoint
 
             return TypedResults.Ok(response);
         })
-            .WithName(Name)
+            .WithName(Name)            
             .WithDescription("Get Movie By Id or Slug")
             .Produces<MovieResponse>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status400BadRequest);
+            .Produces(StatusCodes.Status400BadRequest)
+            .CacheOutput("MoviesCache");
 
         return app;
     }

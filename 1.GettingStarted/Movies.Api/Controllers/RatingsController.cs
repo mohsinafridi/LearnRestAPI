@@ -34,7 +34,7 @@ public class RatingsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [HttpDelete(ApiEndpoints.Movies.DeleteRating)]
-    public async Task<IActionResult>DeleteRating([FromRoute] Guid id,CancellationToken token)
+    public async Task<IActionResult> DeleteRating([FromRoute] Guid id,CancellationToken token)
     {
         var userId = HttpContext.GetUserId();
         var result = await _ratingService.DeleteRatingAsync(id, userId!.Value, token);
